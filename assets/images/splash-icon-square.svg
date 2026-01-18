@@ -1,0 +1,51 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nightSky15" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0c29"/>
+      <stop offset="50%" style="stop-color:#302b63"/>
+      <stop offset="100%" style="stop-color:#24243e"/>
+    </linearGradient>
+    <linearGradient id="pulseGrad15" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f953c6"/>
+      <stop offset="100%" style="stop-color:#b91d73"/>
+    </linearGradient>
+    <radialGradient id="moonGrad15" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="50%" style="stop-color:#e2e8f0"/>
+      <stop offset="100%" style="stop-color:#b0b8c4"/>
+    </radialGradient>
+    <filter id="glow15">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="moonGlow15" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <mask id="crescentMask15">
+      <circle cx="395" cy="115" r="40" fill="white"/>
+      <circle cx="418" cy="108" r="36" fill="black"/>
+    </mask>
+  </defs>
+  <!-- Background without rounded corners -->
+  <rect width="512" height="512" fill="url(#nightSky15)"/>
+  <!-- Stars scattered -->
+  <circle cx="80" cy="90" r="3" fill="white" opacity="0.9"/>
+  <circle cx="150" cy="130" r="2" fill="white" opacity="0.6"/>
+  <circle cx="200" cy="80" r="2" fill="white" opacity="0.5"/>
+  <circle cx="280" cy="110" r="2" fill="white" opacity="0.6"/>
+  <circle cx="300" cy="160" r="3" fill="white" opacity="0.7"/>
+  <circle cx="100" cy="200" r="2" fill="white" opacity="0.5"/>
+  <circle cx="450" cy="200" r="2" fill="white" opacity="0.4"/>
+  <circle cx="60" cy="150" r="2" fill="white" opacity="0.6"/>
+  <!-- Crescent moon with gradient -->
+  <circle cx="395" cy="115" r="40" fill="url(#moonGrad15)" mask="url(#crescentMask15)" filter="url(#moonGlow15)"/>
+  <!-- Pulse wave -->
+  <path d="M50 300 L120 300 L150 300 L180 340 L220 180 L260 400 L300 260 L340 300 L460 300" fill="none" stroke="url(#pulseGrad15)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow15)"/>
+</svg>

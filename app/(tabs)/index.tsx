@@ -1,98 +1,206 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { useState, useCallback } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { colors } from '@/constants/colors';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { TodayReportCard } from '@/components/cards/TodayReportCard';
+import { HistoryRow } from '@/components/cards/HistoryRow';
+import { AlertBanner } from '@/components/ui/AlertBanner';
+import { SleepDay } from '@/lib/types';
+import { getHistory, getTodayDateString } from '@/lib/storage/history';
+import { getAuthorizationStatus } from '@/lib/healthkit/permissions';
+import { runMorningCheck } from '@/lib/background/tasks';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// Generate last 7 days with placeholders for missing data
+function getLast7Days(history: SleepDay[]): SleepDay[] {
+  const days: SleepDay[] = [];
+  const today = new Date();
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateString = date.toISOString().split('T')[0];
+
+    const existingDay = history.find((d) => d.date === dateString);
+    if (existingDay) {
+      days.push(existingDay);
+    } else {
+      days.push({
+        date: dateString,
+        hasData: false,
+        sends: {},
+      });
+    }
+  }
+
+  return days;
+}
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const [history, setHistory] = useState<SleepDay[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [healthKitDenied, setHealthKitDenied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
+
+  const loadData = async () => {
+    try {
+      // Check HealthKit status
+      const status = await getAuthorizationStatus();
+      setHealthKitDenied(status === 'denied');
+
+      // Load history and generate last 7 days
+      const historyData = await getHistory();
+      const last7Days = getLast7Days(historyData);
+      setHistory(last7Days);
+    } catch (error) {
+      console.error('Failed to load data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      // Run full morning check (fetches 7 days + sends to channels if needed)
+      await runMorningCheck();
+
+      // Reload history to show updated data
+      await loadData();
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const todayData = history.find((day) => day.date === getTodayDateString());
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Night Pulse</Text>
+        <TouchableOpacity
+          onPress={() => router.push('/about')}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <IconSymbol name="info.circle" size={24} color={colors.textSecondary} />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        {healthKitDenied && (
+          <AlertBanner
+            message="Health access denied. Enable in Settings to track sleep."
+            action="Open Settings"
+            onAction={() => {
+              // Open health settings
+              import('expo-linking').then((Linking) => {
+                Linking.openURL('app-settings:');
+              });
+            }}
+          />
+        )}
+
+        <TodayReportCard
+          sleepDay={todayData}
+          isLoading={isLoading}
+          onViewDetails={() => {
+            const dateToView = todayData?.date || getTodayDateString();
+            router.push(`/day/${dateToView}`);
+          }}
+        />
+
+        <View style={styles.historySection}>
+          <Text style={styles.sectionTitle}>Last 7 Days</Text>
+          {history.slice(1).map((day) => (
+            <HistoryRow
+              key={day.date}
+              sleepDay={day}
+              onPress={() => router.push(`/day/${day.date}`)}
+            />
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
   },
-  stepContainer: {
-    gap: 8,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 100, // Extra space for floating tab bar
+  },
+  historySection: {
+    marginTop: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginBottom: 16,
+  },
+  emptyHistory: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: colors.textPrimary,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  emptySubtext: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
 });

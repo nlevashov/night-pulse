@@ -1,65 +1,244 @@
-# Welcome to your Expo app 👋
+# Night Pulse
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+iOS app for tracking and sharing your sleep heart rate data with your coach or team.
 
-## Get started
+## Features
 
-To start the app, in your terminal run:
+- **Sleep Heart Rate Analysis**: Automatically fetches sleep and heart rate data from Apple HealthKit
+- **Daily Reports**: Generates visual charts with heart rate trends across sleep phases (Core, Deep, REM)
+- **Multiple Sharing Channels**:
+  - Gmail: Send reports via email with chart attachment
+  - Telegram: Send to a bot/group with formatted message and chart
+  - Manual Share: Use iOS share sheet to send anywhere
+- **Background Delivery**: Automatically sends reports after you wake up
+- **Outlier Detection**: Uses IQR method to filter unrealistic heart rate values
 
-```bash
-npm run start
-```
+## Screenshots
 
-In the output, you'll find options to open the app in:
+[TODO: Add screenshots]
 
-- [a development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [an Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [an iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Requirements
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- iOS 15.0+
+- Apple Watch with heart rate and sleep tracking enabled
+- Node.js 18+
 
-## Workflows
-
-This project is configured to use [EAS Workflows](https://docs.expo.dev/eas/workflows/get-started/) to automate some development and release processes. These commands are set up in [`package.json`](./package.json) and can be run using NPM scripts in your terminal.
-
-### Previews
-
-Run `npm run draft` to [publish a preview update](https://docs.expo.dev/eas/workflows/examples/publish-preview-update/) of your project, which can be viewed in Expo Go or in a development build.
-
-### Development Builds
-
-Run `npm run development-builds` to [create a development build](https://docs.expo.dev/eas/workflows/examples/create-development-builds/). Note - you'll need to follow the [Prerequisites](https://docs.expo.dev/eas/workflows/examples/create-development-builds/#prerequisites) to ensure you have the correct emulator setup on your machine.
-
-### Production Deployments
-
-Run `npm run deploy` to [deploy to production](https://docs.expo.dev/eas/workflows/examples/deploy-to-production/). Note - you'll need to follow the [Prerequisites](https://docs.expo.dev/eas/workflows/examples/deploy-to-production/#prerequisites) to ensure you're set up to submit to the Apple and Google stores.
-
-## Hosting
-
-Expo offers hosting for websites and API functions via EAS Hosting. See the [Getting Started](https://docs.expo.dev/eas/hosting/get-started/) guide to learn more.
-
-
-## Get a fresh project
-
-When you're ready, run:
+## Quick Start
 
 ```bash
-npm run reset-project
+# Clone the repository
+git clone https://github.com/your-username/night-pulse.git
+cd night-pulse
+
+# Install dependencies
+npm install
+
+# Start Metro bundler
+npm start
+
+# Build and run on iOS simulator
+npx expo run:ios
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+> **Note**: This app requires a development build (not Expo Go) due to native HealthKit integration.
 
-## Learn more
+## Configuration
 
-To learn more about developing your project with Expo, look at the following resources:
+### Google OAuth (for Gmail)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+To use Gmail integration, you need your own Google OAuth credentials:
 
-## Join the community
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable Gmail API
+4. Create OAuth 2.0 credentials (iOS application)
+5. Add your iOS bundle identifier: `com.yourname.nightpulse`
+6. Copy the Client ID
 
-Join our community of developers creating universal apps.
+Update `lib/config.ts`:
+```typescript
+export const GOOGLE_CLIENT_ID = 'your-client-id.apps.googleusercontent.com';
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Update `app.json` with your reversed client ID in `CFBundleURLSchemes`:
+```json
+"CFBundleURLSchemes": [
+  "com.googleusercontent.apps.your-client-id"
+]
+```
+
+### Telegram Bot
+
+1. Create a bot via [@BotFather](https://t.me/botfather)
+2. Get your chat ID (send a message to your bot and check the Telegram API)
+3. Configure in the app's Channels settings
+
+## Project Structure
+
+```
+├── app/                      # Expo Router pages
+│   ├── (tabs)/              # Tab navigation screens
+│   │   ├── index.tsx        # History list (home)
+│   │   └── channels.tsx     # Channel settings
+│   ├── day/[date].tsx       # Day detail with chart
+│   └── _layout.tsx          # Root layout
+├── components/              # Reusable UI components
+│   ├── cards/              # Card components (HistoryRow, etc.)
+│   ├── charts/             # Chart rendering (MiniSparkline, etc.)
+│   ├── sharing/            # Share-related components
+│   └── ui/                 # Basic UI elements (buttons, icons)
+├── lib/                     # Core business logic
+│   ├── background/         # Background task handling
+│   ├── channels/           # Gmail, Telegram integrations
+│   ├── formatting/         # Report text generation
+│   ├── healthkit/          # HealthKit data fetching
+│   ├── processing/         # Data analysis & outlier detection
+│   ├── sharing/            # Share sheet integration
+│   ├── storage/            # AsyncStorage & SecureStore
+│   ├── config.ts           # App configuration
+│   └── types.ts            # Core type definitions
+├── constants/              # Colors, sleep phases
+├── __tests__/              # Unit tests
+└── assets/                 # Images, icons, fonts
+```
+
+## Key Technologies
+
+| Technology | Purpose |
+|------------|---------|
+| [Expo](https://expo.dev/) | React Native framework |
+| [Expo Router](https://docs.expo.dev/router/introduction/) | File-based routing |
+| [@kingstinct/react-native-healthkit](https://github.com/kingstinct/react-native-healthkit) | HealthKit integration |
+| [react-native-bottom-tabs](https://github.com/nicktaylor/react-native-bottom-tabs) | Native iOS tab bar |
+| [react-native-share](https://github.com/react-native-share/react-native-share) | iOS share sheet |
+
+## HealthKit Permissions
+
+The app requests read access to:
+- **Sleep Analysis** - Sleep phases and duration
+- **Heart Rate** - HR measurements during sleep
+- **Step Count** - Wake detection trigger
+- **Workouts** - Wake detection trigger
+
+## Background Delivery
+
+The app uses `expo-background-fetch` to automatically check for and send sleep reports:
+
+| Setting | Value |
+|---------|-------|
+| Minimum interval | 15 minutes (iOS minimum) |
+| Active hours | 07:00 - 19:00 |
+| Wake triggers | 1 hour passed, 100+ steps, or workout started |
+
+> **Note**: iOS controls actual execution timing based on battery, network, and usage patterns.
+
+## Development
+
+### Available Scripts
+
+```bash
+npm start           # Start Metro bundler
+npm run ios         # Run on iOS simulator
+npm run android     # Run on Android emulator
+npm test            # Run unit tests
+npm run test:watch  # Run tests in watch mode
+npm run test:coverage # Run tests with coverage
+npm run typecheck   # TypeScript type checking
+npm run lint        # ESLint code linting
+```
+
+### Building
+
+```bash
+# Development build
+eas build --profile development --platform ios
+
+# Preview build
+eas build --profile preview --platform ios
+
+# Production build
+eas build --profile production --platform ios
+```
+
+## Contributing
+
+We welcome contributions! Please follow these guidelines:
+
+### Getting Started
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Run tests: `npm test`
+5. Run type checking: `npm run typecheck`
+6. Commit with a descriptive message
+7. Push and create a Pull Request
+
+### Code Style
+
+- Use TypeScript for all new code
+- Follow the existing code patterns
+- Add JSDoc comments for public functions
+- Write unit tests for new logic in `lib/`
+
+### Commit Messages
+
+Use clear, descriptive commit messages:
+- `feat: Add new feature`
+- `fix: Fix bug in component`
+- `refactor: Improve code structure`
+- `docs: Update documentation`
+- `test: Add unit tests`
+
+### Pull Request Guidelines
+
+- Keep PRs focused on a single feature/fix
+- Update tests if changing behavior
+- Update README if adding new features
+- Ensure all tests pass before requesting review
+
+## Architecture
+
+### Data Flow
+
+```
+HealthKit → sleep-analyzer → SleepDay → formatting → channels
+                  ↓
+            outlier-detection
+                  ↓
+              statistics
+```
+
+### Key Modules
+
+- **`lib/processing/sleep-analyzer.ts`** - Main data processing pipeline
+- **`lib/processing/outlier-detection.ts`** - IQR-based outlier filtering
+- **`lib/formatting/report-text.ts`** - Unified text generation for all channels
+- **`lib/background/tasks.ts`** - Background task orchestration
+
+## Troubleshooting
+
+### HealthKit data not appearing
+- Ensure Apple Watch is synced with iPhone
+- Check HealthKit permissions in iOS Settings
+- Sleep data needs to be recorded by Apple Watch
+
+### Background sends not working
+- Background App Refresh must be enabled
+- iOS may delay or skip background tasks based on usage patterns
+- Check device logs for `[Background]` or `[MorningCheck]` entries
+
+### Gmail authentication issues
+- Verify Google OAuth credentials are correct
+- Check that the reversed client ID in `app.json` matches
+- Ensure Gmail API is enabled in Google Cloud Console
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Links
+
+- [Expo Documentation](https://docs.expo.dev/)
+- [HealthKit Documentation](https://developer.apple.com/documentation/healthkit)
+- [Report Issues](https://github.com/your-username/night-pulse/issues)

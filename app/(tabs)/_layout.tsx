@@ -1,35 +1,69 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Tabs, usePathname, useRouter } from 'expo-router';
+import TabView from 'react-native-bottom-tabs';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { colors } from '@/constants/colors';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+// Route configuration for native tab bar
+interface TabRoute {
+  key: string;
+  title: string;
+  focusedIcon: { sfSymbol: SFSymbol };
+}
+
+const routes: TabRoute[] = [
+  { key: 'index', title: 'Home', focusedIcon: { sfSymbol: 'heart.fill' } },
+  { key: 'channels', title: 'Channels', focusedIcon: { sfSymbol: 'paperplane.fill' } },
+];
+
+function NativeTabBar() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const currentIndex = pathname === '/channels' || pathname.startsWith('/channels') ? 1 : 0;
 
   return (
+    <View style={styles.tabBarContainer} pointerEvents="box-none">
+      <TabView
+        navigationState={{ index: currentIndex, routes }}
+        onIndexChange={(index) => {
+          if (index === 0) {
+            router.navigate('/');
+          } else {
+            router.navigate('/channels');
+          }
+        }}
+        tabBarActiveTintColor={colors.primary}
+        tabBarInactiveTintColor={colors.textSecondary}
+        hapticFeedbackEnabled
+        renderScene={() => null}
+        translucent={true}
+      />
+    </View>
+  );
+}
+
+export default function TabLayout() {
+  return (
     <Tabs
+      tabBar={() => <NativeTabBar />}
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
+      }}
+    >
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="channels" />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 88,
+  },
+});

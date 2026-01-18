@@ -1,46 +1,59 @@
 {
   "expo": {
-    "name": "expo-project",
-    "slug": "expo-project",
+    "name": "Night Pulse",
+    "slug": "night-pulse",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "expo-project",
-    "userInterfaceStyle": "automatic",
+    "scheme": "nightpulse",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.nlevashov.expoproject"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.nlevashov.expoproject"
-    },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nlevashov.nightpulse",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ],
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.587826292807-u0p69ioudogh954vfdfq4ajoge8g77tv"
+            ]
+          }
+        ]
+      }
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      [
+        "expo-notifications",
+        {
+          "sounds": []
+        }
+      ],
+      "expo-secure-store",
+      [
+        "expo-background-fetch",
+        {
+          "minimumInterval": 900
+        }
+      ],
+      ["@kingstinct/react-native-healthkit", {
+        "NSHealthShareUsageDescription": "Night Pulse needs access to your sleep, heart rate, step count, and workout data to generate daily reports for your coach and detect when you've woken up.",
+        "NSHealthUpdateUsageDescription": "Night Pulse does not write any data to Apple Health.",
+        "background": true
+      }],
+      "@react-native-community/datetimepicker",
+      "react-native-bottom-tabs"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -49,15 +62,19 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "6c78357f-3290-42ce-adb5-a1c86a46347c"
+        "projectId": "eb8c46b0-08ca-4da1-a8f2-514931788f26"
       }
-    },
-    "owner": "nlevashov",
-    "updates": {
-      "url": "https://u.expo.dev/6c78357f-3290-42ce-adb5-a1c86a46347c"
     },
     "runtimeVersion": {
       "policy": "appVersion"
+    },
+    "owner": "nlevashov",
+    "android": {
+      "permissions": [
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK"
+      ],
+      "package": "com.nlevashov.nightpulse"
     }
   }
 }

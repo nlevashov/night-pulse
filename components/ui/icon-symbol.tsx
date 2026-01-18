@@ -14,10 +14,51 @@ type IconSymbolName = keyof typeof MAPPING;
  * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
  */
 const MAPPING = {
+  // Navigation
   'house.fill': 'home',
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'arrow.right': 'arrow-forward',
+  'arrow.up.right': 'open-in-new',
+
+  // Health & Sleep
+  'heart.fill': 'favorite',
+  'heart.text.square.fill': 'monitor-heart',
+  'bed.double.fill': 'hotel',
+  'moon.fill': 'bedtime',
+  'moon.zzz.fill': 'bedtime',
+  'sun.max.fill': 'wb-sunny',
+
+  // Charts & Data
+  'chart.xyaxis.line': 'show-chart',
+
+  // Status & Actions
+  'checkmark.circle.fill': 'check-circle',
+  'exclamationmark.triangle.fill': 'warning',
+  'xmark.circle.fill': 'cancel',
+  'info.circle': 'info-outline',
+  'info.circle.fill': 'info',
+  'questionmark.circle.fill': 'help',
+  'bell.fill': 'notifications',
+  'clock.fill': 'access-time',
+  'star.fill': 'star',
+
+  // Sharing & Communication
+  'square.and.arrow.up': 'share',
+  'envelope.fill': 'email',
+  'person.fill': 'person',
+  'person.badge.key.fill': 'vpn-key',
+  'hand.tap.fill': 'touch-app',
+  'hand.raised.fill': 'pan-tool',
+
+  // Security
+  'lock.shield.fill': 'security',
+  'eye.fill': 'visibility',
+  'eye.slash.fill': 'visibility-off',
+
+  // Misc
+  'lightbulb.fill': 'lightbulb',
 } as IconMapping;
 
 /**
@@ -37,5 +78,13 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  const mappedName = MAPPING[name];
+  if (!mappedName) {
+    console.warn(`Icon "${name}" not found in mapping, using default`);
+    return <MaterialIcons color={color} size={size} name="help-outline" style={style} />;
+  }
+  return <MaterialIcons color={color} size={size} name={mappedName} style={style} />;
 }
+
+// Re-export for convenience
+export type { IconSymbolName };
