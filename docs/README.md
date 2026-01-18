@@ -18,20 +18,15 @@ These documents are provided for Apple App Store and Google Play Store review an
 
 ### Links for Store Listings
 
-When publishing to app stores, host these documents and use the following URLs:
+When publishing to app stores, use the following URLs:
 
-- **Privacy Policy URL:** `https://github.com/[username]/night-pulse/blob/main/docs/PRIVACY_POLICY.md`
-- **Terms of Service URL:** `https://github.com/[username]/night-pulse/blob/main/docs/TERMS_OF_SERVICE.md`
-- **Support URL:** `https://github.com/[username]/night-pulse/blob/main/docs/SUPPORT.md`
+- **Privacy Policy URL:** `https://github.com/nlevashov/night-pulse/blob/main/docs/PRIVACY_POLICY.md`
+- **Terms of Service URL:** `https://github.com/nlevashov/night-pulse/blob/main/docs/TERMS_OF_SERVICE.md`
+- **Support URL:** `https://github.com/nlevashov/night-pulse/blob/main/docs/SUPPORT.md`
 
 ### Google OAuth Verification
 
 For Google OAuth consent screen verification, provide:
 1. Privacy Policy URL
 2. Terms of Service URL (optional but recommended)
-3. Application Homepage: Your GitHub repo or landing page
-4. Support Email: A valid email address
-
----
-
-**Important:** Replace `[your-email@example.com]` and `[username]` with your actual contact information before publishing.
+3. Application Homepage: https://github.com/nlevashov/night-pulse

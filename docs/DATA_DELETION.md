@@ -63,11 +63,9 @@ Messages sent via Telegram remain in the chat history. To delete:
 
 ### Contact Us
 
-If you have questions about data deletion or need assistance:
+If you have questions about data deletion or need assistance, please open an issue:
 
-**Email:** [your-email@example.com]
-
-We will respond within 48 hours.
+[https://github.com/nlevashov/night-pulse/issues](https://github.com/nlevashov/night-pulse/issues)
 
 ---
 

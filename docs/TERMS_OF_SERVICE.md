@@ -80,7 +80,7 @@ We may terminate or suspend your access to the App immediately, without prior no
 
 ## Governing Law
 
-These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to conflict of law principles.
+These Terms shall be governed by and construed in accordance with the laws of your jurisdiction, without regard to conflict of law principles.
 
 ## Severability
 
@@ -88,11 +88,9 @@ If any provision of these Terms is found to be unenforceable, the remaining prov
 
 ## Contact Us
 
-For questions about these Terms, please contact us at:
+For questions about these Terms, please open an issue:
 
-**Email:** [your-email@example.com]
-
-**GitHub:** [https://github.com/your-username/night-pulse](https://github.com/your-username/night-pulse)
+[https://github.com/nlevashov/night-pulse/issues](https://github.com/nlevashov/night-pulse/issues)
 
 ## Acknowledgment
 

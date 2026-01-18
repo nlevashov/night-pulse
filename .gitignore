@@ -41,6 +41,13 @@ yarn-error.*
 # test coverage
 coverage/
 
+# IDE
+.vscode/
+_vscode/
+
+# EAS
+.eas/
+
 app-example
 
 # generated native folders

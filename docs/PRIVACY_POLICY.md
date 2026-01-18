@@ -12,6 +12,8 @@ Night Pulse ("we", "our", or "us") is committed to protecting your privacy. This
 Night Pulse accesses the following data from Apple HealthKit:
 - Sleep analysis data (sleep stages: Core, Deep, REM)
 - Heart rate measurements during sleep periods
+- Step count (to detect when you wake up)
+- Workouts (to detect when you wake up)
 
 This data is used solely to generate sleep reports and is processed entirely on your device.
 
@@ -87,11 +89,9 @@ We may update this Privacy Policy from time to time. We will notify you of any c
 
 ## Contact Us
 
-If you have questions about this Privacy Policy, please contact us at:
+If you have questions about this Privacy Policy, please open an issue:
 
-**Email:** [your-email@example.com]
-
-**GitHub:** [https://github.com/your-username/night-pulse](https://github.com/your-username/night-pulse)
+[https://github.com/nlevashov/night-pulse/issues](https://github.com/nlevashov/night-pulse/issues)
 
 ## Consent
 

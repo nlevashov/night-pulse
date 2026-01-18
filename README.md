@@ -27,7 +27,7 @@ iOS app for tracking and sharing your sleep heart rate data with your coach or t
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/night-pulse.git
+git clone https://github.com/nlevashov/night-pulse.git
 cd night-pulse
 
 # Install dependencies
@@ -241,4 +241,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 - [Expo Documentation](https://docs.expo.dev/)
 - [HealthKit Documentation](https://developer.apple.com/documentation/healthkit)
-- [Report Issues](https://github.com/your-username/night-pulse/issues)
+- [Report Issues](https://github.com/nlevashov/night-pulse/issues)
